@@ -1,0 +1,38 @@
+<!-- Plugin Configuration File: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN, cannot be changed between the plugin versions. -->
+    <id>com.mateuszwozniak.intellineon</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
+    <name>Intellineon</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://mateuszwozniak.com">Mateusz Woźniak</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
+    <description><![CDATA[
+        Neon integration for JetBrains IDEs.
+        Provides Neon database connection management and branch management.
+        Features:
+        — Add DataSources from Neon Branches
+        — Copy connection strings for Neon branches
+    ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+
+    <depends>com.intellij.database</depends>
+    <!-- Extensions defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.mateuszwozniak.intellineon.service.NeonService"/>
+        <toolWindow id="NeonExplorer"
+                    factoryClass="com.mateuszwozniak.intellineon.ui.NeonExplorerToolWindowFactory"
+                    anchor="right"
+                    icon="/icons/neon_logo.svg"/>
+        <notificationGroup id="Intellineon Notifications"
+                           displayType="BALLOON"/>
+    </extensions>
+</idea-plugin>
