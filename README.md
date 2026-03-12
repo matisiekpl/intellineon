@@ -2,6 +2,8 @@
 
 IntelliNeon is a JetBrains IDE plugin that provides seamless integration with [Neon](https://neon.tech), the serverless PostgreSQL database. It allows you to manage your Neon accounts, projects, and branches directly within your IDE.
 
+**Note:** This project is an independent community-led initiative and is **not affiliated with, endorsed by, or sponsored by Neon**.
+
 ## Features
 
 - **Neon Explorer**: A dedicated tool window to browse your Neon organizations, projects, and branches.
