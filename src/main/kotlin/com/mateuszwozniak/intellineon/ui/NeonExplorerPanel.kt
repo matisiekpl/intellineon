@@ -84,6 +84,20 @@ class NeonExplorerPanel(private val project: Project) : JPanel(BorderLayout()) {
             }
         })
 
+        group.addSeparator()
+
+        group.add(object : AnAction("Expand All", "Expand all tree nodes", AllIcons.Actions.Expandall) {
+            override fun actionPerformed(e: AnActionEvent) {
+                expandAllNodes()
+            }
+        })
+
+        group.add(object : AnAction("Collapse All", "Collapse all tree nodes", AllIcons.Actions.Collapseall) {
+            override fun actionPerformed(e: AnActionEvent) {
+                collapseAllNodes()
+            }
+        })
+
         val toolbar = ActionManager.getInstance().createActionToolbar("NeonExplorer", group, true)
         toolbar.targetComponent = this
         return toolbar
@@ -228,6 +242,22 @@ class NeonExplorerPanel(private val project: Project) : JPanel(BorderLayout()) {
                     Messages.showErrorDialog(project, e.message ?: "Unknown error", "Copy Connection String")
                 }
             }
+        }
+    }
+
+    private fun expandAllNodes() {
+        var row = 0
+        while (row < tree.rowCount) {
+            tree.expandRow(row)
+            row++
+        }
+    }
+
+    private fun collapseAllNodes() {
+        var row = tree.rowCount - 1
+        while (row > 0) {
+            tree.collapseRow(row)
+            row--
         }
     }
 
