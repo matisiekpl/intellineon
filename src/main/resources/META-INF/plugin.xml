@@ -13,7 +13,7 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description><![CDATA[
-        Neon integration for JetBrains IDEs.
+        NeonDB integration for JetBrains IDEs.
         Provides Neon database connection management and branch management.
         Features:
         — Add DataSources from Neon Branches
