@@ -19,6 +19,8 @@ import com.intellij.ui.SideBorder
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.treeStructure.Tree
 import com.mateuszwozniak.intellineon.model.NeonAccount
+import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.openapi.extensions.PluginId
 import com.mateuszwozniak.intellineon.repository.DataSourceRepository
 import com.mateuszwozniak.intellineon.service.NeonService
 import com.mateuszwozniak.intellineon.ui.tree.NeonTreeCellRenderer
@@ -144,15 +146,17 @@ class NeonExplorerPanel(private val project: Project) : JPanel(BorderLayout()) {
                 group.add(openAction)
 
                 if (treeNode is NeonTreeNode.Branch) {
-                    group.add(object : AnAction(
-                        "Connect To Branch",
-                        "Create IntelliJ data source for this branch",
-                        AllIcons.Actions.Lightning
-                    ) {
-                        override fun actionPerformed(e: AnActionEvent) {
-                            onConnectToBranch(treeNode)
-                        }
-                    })
+                    if (isDatabasePluginAvailable()) {
+                        group.add(object : AnAction(
+                            "Connect To Branch",
+                            "Create IntelliJ data source for this branch",
+                            AllIcons.Actions.Lightning
+                        ) {
+                            override fun actionPerformed(e: AnActionEvent) {
+                                onConnectToBranch(treeNode)
+                            }
+                        })
+                    }
                     group.add(object : AnAction(
                         "Copy Pooled Connection String",
                         "Copy pooled connection string to clipboard",
@@ -179,7 +183,12 @@ class NeonExplorerPanel(private val project: Project) : JPanel(BorderLayout()) {
         })
     }
 
+    private fun isDatabasePluginAvailable(): Boolean {
+        return PluginManagerCore.isPluginInstalled(PluginId.getId("com.intellij.database"))
+    }
+
     private fun onConnectToBranch(branchNode: NeonTreeNode.Branch) {
+        if (!isDatabasePluginAvailable()) return
         ApplicationManager.getApplication().executeOnPooledThread {
             try {
                 val uri = neonService.fetchConnectionUri(branchNode.accountId, branchNode.branch, pooled = false)

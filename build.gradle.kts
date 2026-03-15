@@ -23,7 +23,7 @@ dependencies {
 
         // Add plugin dependencies for compilation here:
 
-
+        // Database plugin is an optional dependency — see plugin.xml
         bundledPlugin("com.intellij.database")
     }
 

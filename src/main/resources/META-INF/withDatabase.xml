@@ -1,0 +1,5 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Extensions requiring Database plugin API -->
+    </extensions>
+</idea-plugin>
