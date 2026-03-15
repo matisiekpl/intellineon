@@ -22,6 +22,7 @@ import com.mateuszwozniak.intellineon.model.NeonAccount
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.openapi.extensions.PluginId
 import com.mateuszwozniak.intellineon.repository.DataSourceRepository
+import com.mateuszwozniak.intellineon.service.EnvironmentFileService
 import com.mateuszwozniak.intellineon.service.NeonService
 import com.mateuszwozniak.intellineon.ui.tree.NeonTreeCellRenderer
 import com.mateuszwozniak.intellineon.ui.tree.NeonTreeNode
@@ -35,6 +36,7 @@ import javax.swing.tree.DefaultTreeModel
 class NeonExplorerPanel(private val project: Project) : JPanel(BorderLayout()) {
 
     private val neonService = service<NeonService>()
+    private val envService = project.service<EnvironmentFileService>()
     private val rootNode = DefaultMutableTreeNode()
     private val treeModel = DefaultTreeModel(rootNode)
     private val tree = Tree(treeModel)
@@ -189,6 +191,17 @@ class NeonExplorerPanel(private val project: Project) : JPanel(BorderLayout()) {
                             onCopyConnectionString(treeNode, pooled = false)
                         }
                     })
+                    if (envService.hasEnvFile()) {
+                        group.add(object : AnAction(
+                            "Put Into .env",
+                            "Upsert DATABASE_URL and DATABASE_URL_DIRECT in .env file",
+                            AllIcons.FileTypes.Any_type
+                        ) {
+                            override fun actionPerformed(e: AnActionEvent) {
+                                onPutIntoEnv(treeNode)
+                            }
+                        })
+                    }
                 }
 
                 val popup = ActionManager.getInstance().createActionPopupMenu("NeonExplorerPopup", group)
@@ -218,6 +231,32 @@ class NeonExplorerPanel(private val project: Project) : JPanel(BorderLayout()) {
             } catch (e: Exception) {
                 SwingUtilities.invokeLater {
                     Messages.showErrorDialog(project, e.message ?: "Unknown error", "Connect To Branch")
+                }
+            }
+        }
+    }
+
+    private fun onPutIntoEnv(branchNode: NeonTreeNode.Branch) {
+        ApplicationManager.getApplication().executeOnPooledThread {
+            try {
+                val pooledUri = neonService.fetchConnectionUri(branchNode.accountId, branchNode.branch, pooled = true)
+                val unpooledUri = neonService.fetchConnectionUri(branchNode.accountId, branchNode.branch, pooled = false)
+                SwingUtilities.invokeLater {
+                    envService.upsertEntries(mapOf(
+                        "DATABASE_URL" to pooledUri,
+                        "DATABASE_URL_DIRECT" to unpooledUri
+                    ))
+                    NotificationGroupManager.getInstance()
+                        .getNotificationGroup("Intellineon Notifications")
+                        .createNotification(
+                            "DATABASE_URL and DATABASE_URL_DIRECT updated in .env",
+                            NotificationType.INFORMATION
+                        )
+                        .notify(project)
+                }
+            } catch (e: Exception) {
+                SwingUtilities.invokeLater {
+                    Messages.showErrorDialog(project, e.message ?: "Unknown error", "Put Into .env")
                 }
             }
         }
