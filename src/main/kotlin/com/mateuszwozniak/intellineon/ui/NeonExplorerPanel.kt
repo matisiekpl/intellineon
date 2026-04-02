@@ -194,7 +194,7 @@ class NeonExplorerPanel(private val project: Project) : JPanel(BorderLayout()) {
                     if (envService.hasEnvFile()) {
                         group.add(object : AnAction(
                             "Put Into .env",
-                            "Upsert DATABASE_URL and DATABASE_URL_DIRECT in .env file",
+                            "Upsert DATABASE_URL and DATABASE_URL_UNPOOLED/DATABASE_URL_DIRECT in .env file",
                             AllIcons.FileTypes.Any_type
                         ) {
                             override fun actionPerformed(e: AnActionEvent) {
@@ -242,14 +242,15 @@ class NeonExplorerPanel(private val project: Project) : JPanel(BorderLayout()) {
                 val pooledUri = neonService.fetchConnectionUri(branchNode.accountId, branchNode.branch, pooled = true)
                 val unpooledUri = neonService.fetchConnectionUri(branchNode.accountId, branchNode.branch, pooled = false)
                 SwingUtilities.invokeLater {
+                    val unpooledKey = envService.unpooledUrlKey()
                     envService.upsertEntries(mapOf(
                         "DATABASE_URL" to pooledUri,
-                        "DATABASE_URL_DIRECT" to unpooledUri
+                        unpooledKey to unpooledUri
                     ))
                     NotificationGroupManager.getInstance()
                         .getNotificationGroup("Intellineon Notifications")
                         .createNotification(
-                            "DATABASE_URL and DATABASE_URL_DIRECT updated in .env",
+                            "DATABASE_URL and $unpooledKey updated in .env",
                             NotificationType.INFORMATION
                         )
                         .notify(project)
