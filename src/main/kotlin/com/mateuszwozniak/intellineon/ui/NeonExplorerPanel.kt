@@ -220,8 +220,9 @@ class NeonExplorerPanel(private val project: Project) : JPanel(BorderLayout()) {
             try {
                 val uri = neonService.fetchConnectionUri(branchNode.accountId, branchNode.branch, pooled = false)
                 val name = "neon-${branchNode.accountName}-${branchNode.projectName}-${branchNode.branch.name}"
+                val readonly = branchNode.branch.name == "production"
                 SwingUtilities.invokeLater {
-                    DataSourceRepository(project).upsertDataSource(name, uri)
+                    DataSourceRepository(project).upsertDataSource(name, uri, readonly)
                     ToolWindowManager.getInstance(project).getToolWindow("Database")?.show()
                     NotificationGroupManager.getInstance()
                         .getNotificationGroup("Intellineon Notifications")

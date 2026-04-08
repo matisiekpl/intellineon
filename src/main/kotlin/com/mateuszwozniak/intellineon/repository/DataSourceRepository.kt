@@ -10,7 +10,7 @@ import java.net.URI
 
 class DataSourceRepository(private val project: Project) {
 
-    fun upsertDataSource(name: String, postgresUri: String) {
+    fun upsertDataSource(name: String, postgresUri: String, readonly: Boolean = false) {
         val (jdbcUrl, username, password) = parsePostgresUri(postgresUri)
 
         val manager = LocalDataSourceManager.getInstance(project)
@@ -25,6 +25,7 @@ class DataSourceRepository(private val project: Project) {
         dataSource.url = jdbcUrl
         dataSource.username = username
         dataSource.passwordStorage = LocalDataSource.Storage.PERSIST
+        dataSource.isReadOnly = readonly
 
         val driver = DatabaseDriverManager.getInstance().getDriver("postgresql")
         if (driver != null) {
