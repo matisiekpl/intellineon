@@ -79,8 +79,10 @@ class NeonRepository(apiKey: String) {
     fun fetchConnectionUri(projectId: String, branchId: String, pooled: Boolean): String = runBlocking {
         val databaseName = branchApi.listProjectBranchDatabases(projectId, branchId)
             .databases.firstOrNull()?.name ?: "neondb"
-        val roleName = branchApi.listProjectBranchRoles(projectId, branchId)
-            .roles.firstOrNull()?.name ?: "neondb_owner"
+        val roles = branchApi.listProjectBranchRoles(projectId, branchId).roles
+        val roleName = roles.firstOrNull { it.name == "neondb_owner" }?.name
+            ?: roles.firstOrNull()?.name
+            ?: "neondb_owner"
         projectApi.getConnectionURI(projectId, databaseName, roleName, branchId = branchId, pooled = pooled).uri
     }
 
